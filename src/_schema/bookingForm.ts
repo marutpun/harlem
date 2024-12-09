@@ -13,9 +13,6 @@ export const BookingFormSchema = z
   .refine((data) => data.origin !== data.destination, {
     message: 'The destination is incorrect. Please try again.',
     path: ['destination'],
-  })
-  .refine((data) => {
-    
   });
 
 export type BookingFormDefs = z.infer<typeof BookingFormSchema>;

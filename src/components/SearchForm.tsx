@@ -1,8 +1,8 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -10,7 +10,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from '@/components/ui/command';
 import {
   Form,
   FormControl,
@@ -19,41 +19,52 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { BookingFormSchema, type BookingFormDefs } from "@/_schema/bookingForm";
-import { stations } from "@/lib/station";
-import { useBookingStore } from "@/_context/booking";
+} from '@/components/ui/popover';
+import { BookingFormSchema, type BookingFormDefs } from '@/_schema/bookingForm';
+import { useBookingStore } from '@/_context/booking';
+import { stations } from '@/lib/station';
+import { checkAvailable } from '@/lib/booking';
 
 export default function SearchForm() {
-  const { addOrigin, addDestination } = useBookingStore((state) => state);
-
   const bookingForm = useForm<BookingFormDefs>({
     resolver: zodResolver(BookingFormSchema),
+    defaultValues: {
+      origin: '',
+      destination: '',
+    },
   });
+
+  const { booking, setOrigin, setDestination, setSeatAvailability } = useBookingStore(
+    (state) => state,
+  );
 
   const _handleSubmitForm = (data: BookingFormDefs) => {
     const { origin, destination } = data;
-    console.log(origin, destination);
+    setOrigin(origin);
+    setDestination(destination);
+    
+    const isAvailable = checkAvailable(origin, destination, booking);
+    setSeatAvailability(isAvailable);
   };
 
   return (
-    <div className="container">
+    <main className="py-4">
       <Form {...bookingForm}>
         <form
           onSubmit={bookingForm.handleSubmit(_handleSubmitForm)}
-          className="py-4"
+          className="container"
         >
-          <div className="grid grid-cols-1 gap-x-4 gap-y-4 space-y-8 md:grid-cols-3 md:gap-y-0 md:space-y-0">
+          <div className="grid grid-cols-1 gap-x-4 md:grid-cols-3 md:gap-y-0">
             <FormField
               control={bookingForm.control}
               name="origin"
               render={({ field }) => (
-                <FormItem className="flex h-16 flex-col">
+                <FormItem className="flex h-28 flex-col">
                   <FormLabel>From</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -62,15 +73,15 @@ export default function SearchForm() {
                           variant="outline"
                           role="combobox"
                           className={cn(
-                            "w-full justify-between",
-                            !field.value && "text-muted-foreground",
+                            'w-full justify-between',
+                            !field.value && 'text-muted-foreground',
                           )}
                         >
                           {field.value
                             ? stations.find(
                                 (station) => station.name === field.value,
                               )?.name
-                            : "Select the origin station"}
+                            : 'Select the origin station'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
@@ -86,17 +97,16 @@ export default function SearchForm() {
                                 value={station.name}
                                 key={station.name}
                                 onSelect={() => {
-                                  addOrigin(station.name);
-                                  bookingForm.setValue("origin", station.name);
+                                  bookingForm.setValue('origin', station.name);
                                 }}
                               >
                                 {station.name}
                                 <Check
                                   className={cn(
-                                    "ml-auto",
+                                    'ml-auto',
                                     station.name === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0",
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
                                   )}
                                 />
                               </CommandItem>
@@ -117,7 +127,7 @@ export default function SearchForm() {
               control={bookingForm.control}
               name="destination"
               render={({ field }) => (
-                <FormItem className="flex h-16 flex-col">
+                <FormItem className="flex h-28 flex-col">
                   <FormLabel>To</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -126,15 +136,15 @@ export default function SearchForm() {
                           variant="outline"
                           role="combobox"
                           className={cn(
-                            "w-full justify-between",
-                            !field.value && "text-muted-foreground",
+                            'w-full justify-between',
+                            !field.value && 'text-muted-foreground',
                           )}
                         >
                           {field.value
                             ? stations.find(
                                 (station) => station.name === field.value,
                               )?.name
-                            : "Select the destination station"}
+                            : 'Select the destination station'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
@@ -150,9 +160,8 @@ export default function SearchForm() {
                                 value={station.name}
                                 key={station.name}
                                 onSelect={() => {
-                                  addDestination(station.name);
                                   bookingForm.setValue(
-                                    "destination",
+                                    'destination',
                                     station.name,
                                   );
                                 }}
@@ -160,10 +169,10 @@ export default function SearchForm() {
                                 {station.name}
                                 <Check
                                   className={cn(
-                                    "ml-auto",
+                                    'ml-auto',
                                     station.name === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0",
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
                                   )}
                                 />
                               </CommandItem>
@@ -180,14 +189,14 @@ export default function SearchForm() {
                 </FormItem>
               )}
             />
-            <div className="flex h-16 flex-col justify-center">
-              <Button type="submit" className="mt-0 md:mt-[14px]">
-                Search
+            <div className="mt-[22px] flex flex-col md:h-28">
+              <Button type="submit" className="mt-0">
+                Check Availability
               </Button>
             </div>
           </div>
         </form>
       </Form>
-    </div>
+    </main>
   );
-} 
+}

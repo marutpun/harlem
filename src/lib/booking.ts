@@ -1,8 +1,6 @@
 import { stations } from '@/lib/station';
 
-const bookArray = [];
 const totalSeats = 3;
-const availableSeats = totalSeats;
 
 const seats = Array.from({ length: totalSeats }, (_, index) => ({
   seatNumber: index + 1,
@@ -10,35 +8,38 @@ const seats = Array.from({ length: totalSeats }, (_, index) => ({
 }));
 
 // Function to check if two segments overlap
-function segmentsOverlap(seg1, seg2) {
+function segmentsOverlap(seg1, seg2): boolean {
   // Returns true if segments overlap
-  return seg1.originIndex < seg2.destinationIndex && seg1.destinationIndex > seg2.originIndex;
+  return (
+    seg1.originIndex < seg2.destinationIndex &&
+    seg1.destinationIndex > seg2.originIndex
+  );
 }
 
 // Function to book a seat for a specific segment
-export function bookSeat(originStation, destinationStation) {
-  // Find indices of origin and destination stations
-  const originIndex = stations.findIndex((station) => station.name === originStation);
-  const destinationIndex = stations.findIndex((station) => station.name === destinationStation);
+//export function bookSeat(originStation: string, destinationStation: string):void {}
 
-  if (originIndex === -1 || destinationIndex === -1 || originIndex >= destinationIndex) {
-    console.log('Invalid stations or route.');
-    return;
-  }
+export function checkAvailable(
+  originStation: string,
+  destinationStation: string,
+  paidBooking,
+): boolean {
+  const originIndex = stations.findIndex(
+    (station) => station.name === originStation,
+  );
+  const destinationIndex = stations.findIndex(
+    (station) => station.name === destinationStation,
+  );
 
-  // Try to find an available seat that is not booked for this segment
-  for (const seat of seats) {
-    const overlappingSegment = seat.bookedSegments.find((seg) => segmentsOverlap(seg, { originIndex, destinationIndex }));
+  for (const seat of paidBooking) {
+    const overlappingSegment = seat.bookedSegments.find((seg: []) =>
+      segmentsOverlap(seg, { originIndex, destinationIndex }),
+    );
 
     if (!overlappingSegment) {
-      // If no overlap, book the seat for this segment
-      seat.bookedSegments.push({ originIndex, destinationIndex });
-      console.log(`Seat ${seat.seatNumber} successfully booked from ${originStation} to ${destinationStation}`);
-      console.log(JSON.stringify(seats));
-
-      return;
+      return true;
     }
   }
 
-  console.log('No available seats for this segment.');
+  return false;
 }

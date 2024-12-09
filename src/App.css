@@ -69,6 +69,10 @@
   h1 {
     @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
   }
+
+  h2 {
+    @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
+  }
 }
 
 @layer components {
@@ -77,7 +81,7 @@
   }
 
   .header {
-    @apply flex h-screen flex-wrap items-center justify-center bg-muted;
+    @apply flex h-[50vh] flex-wrap items-center justify-center bg-muted;
   }
 
   .header__container {
@@ -88,9 +92,5 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     @apply mb-2 bg-gradient-to-r from-[#15facc] from-0% via-[#cc15fa] via-50% to-[#facc15] to-100% text-center leading-normal;
-  }
-
-  .header__cta {
-    @apply inline-flex gap-2;
   }
 }
